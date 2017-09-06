@@ -37,7 +37,6 @@ public class Session implements Runnable {
         Thread upkeep = new Thread(this);
         upkeep.setDaemon(true);
         upkeep.start();
-        upkeep.join();
     }
 
     public synchronized void run() {

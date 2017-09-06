@@ -26,7 +26,6 @@ public class MultiMode implements Runnable, ClusterMode {
         Thread upkeep = new Thread(this);
         upkeep.setDaemon(true);
         upkeep.start();
-        upkeep.join();
     }
 
     public synchronized void run() {

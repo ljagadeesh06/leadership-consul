@@ -9,5 +9,12 @@ public class App {
         Cluster cluster = new Cluster(session, new ClusterConfiguration());
 
         new MultiMode(cluster, 5);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {}
+            }
+        }).start();
     }
 }
