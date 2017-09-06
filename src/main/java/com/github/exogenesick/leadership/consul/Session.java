@@ -9,7 +9,7 @@ public class Session implements Runnable {
     private int ttlSeconds;
     private String id;
 
-    Session(int ttlSeconds) {
+    public Session(int ttlSeconds) {
         this.ttlSeconds = ttlSeconds;
         this.sessionClient = new SessionConsulClient();
 
@@ -21,7 +21,7 @@ public class Session implements Runnable {
         }
     }
 
-    Session(int ttlSeconds, SessionConsulClient sessionClient) {
+    public Session(int ttlSeconds, SessionConsulClient sessionClient) {
         this.ttlSeconds = ttlSeconds;
         this.sessionClient = sessionClient;
 

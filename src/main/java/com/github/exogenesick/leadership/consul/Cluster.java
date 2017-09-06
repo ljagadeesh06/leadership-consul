@@ -13,7 +13,7 @@ public class Cluster {
     private ClusterConfiguration clusterConfiguration;
     private KeyValueClient consulKVClient;
 
-    Cluster(
+    public Cluster(
         Session session,
         ClusterConfiguration clusterConfiguration
     ) {
@@ -22,7 +22,7 @@ public class Cluster {
         this.consulKVClient = new KeyValueConsulClient();
     }
 
-    Cluster(
+    public Cluster(
         Session session,
         ClusterConfiguration clusterConfiguration,
         KeyValueClient consulKVClient
