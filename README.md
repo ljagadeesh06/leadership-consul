@@ -46,6 +46,8 @@ public class MultiInstance {
 }
 ```
 
+**Note:** Above configuration only works when Consul is enabled cause of `@ConditionalOnConsulEnabled`. You can remove this annotation.
+
 ## Configuration
 
 ```java
