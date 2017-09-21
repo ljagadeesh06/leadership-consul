@@ -23,25 +23,41 @@ Above code will create Consul session with TTL = 15 seconds and recreate it ever
 @Configuration
 @Profile("multiinstance")
 @ConditionalOnConsulEnabled
-@EnableConfigurationProperties(value = ClusterProperties.class)
+@EnableConfigurationProperties(value = {ClusterProperties.class, ConsulProperties.class})
 public class MultiInstance {
     @Autowired
     private ClusterProperties clusterProperties;
 
+    @Autowired
+    private ConsulProperties consulProperties;
+
     @Bean
-    public Session session() {
-        return new Session(clusterProperties.getLeader().getSessionTtl());
+    public SessionConsulClient sessionConsulClient() {
+        return new SessionConsulClient(consulProperties.getHost(), consulProperties.getPort());
     }
 
     @Bean
-    public Cluster cluster(Session session) {
-        return new Cluster(session, clusterProperties.getLeader());
+    public Session session(SessionConsulClient sessionConsulClient) {
+        return new Session(clusterProperties.getLeader().getSessionTtl(), sessionConsulClient);
+    }
+
+    @Bean
+    public KeyValueConsulClient keyValueConsulClient() {
+        return new KeyValueConsulClient(consulProperties.getHost(), consulProperties.getPort());
+    }
+
+    @Bean
+    public Cluster cluster(
+        Session session,
+        KeyValueConsulClient keyValueConsulClient
+    ) {
+        return new Cluster(session, clusterProperties.getLeader(), keyValueConsulClient);
     }
 
     @Bean
     @Primary
     public ClusterMode multiinstance(Cluster cluster) {
-       return new MultiMode(cluster, clusterProperties.getLeader().getLeadershipAttemptsInterval());
+        return new MultiMode(cluster, clusterProperties.getLeader().getLeadershipAttemptsInterval());
     }
 }
 ```
@@ -76,4 +92,3 @@ cluster:
         sessionTtl: 15
         leadershipAttemptsInterval: 10
 ```
-
