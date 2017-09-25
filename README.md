@@ -1,5 +1,22 @@
 # Leadership Consul
 
+## Installation
+
+Put into Your ```gradle.build```
+
+```groovy
+repositories {
+    // ...
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    // ...
+    compile "com.github.kinguinltdhk:leadership-consul:0.0.4"
+}
+
+```
+
 ## Example of plain Java usage
 
 ```java
