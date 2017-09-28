@@ -1,7 +1,7 @@
 apply plugin: "java"
 apply plugin: "maven"
 
-group "com.github.exogenesick"
+group "com.github.kinguinltdhk"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -14,6 +14,11 @@ dependencies {
     compile "com.ecwid.consul:consul-api:1.2.3"
     compile "com.fasterxml.jackson.core:jackson-core:2.9.0"
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.0"
+    compile "io.reactivex:rxjava:1.3.2"
+
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-core:2.10.0"
+    testCompile "org.mockito:mockito-inline:2.9.0"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

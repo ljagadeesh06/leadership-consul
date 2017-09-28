@@ -1,6 +1,6 @@
-package com.github.exogenesick.leadership.consul;
+package net.kinguin.leadership.consul.election;
 
-public class LeaderData {
+public class Vote {
     public String sessionId;
     public String serviceName;
     public String serviceId;
