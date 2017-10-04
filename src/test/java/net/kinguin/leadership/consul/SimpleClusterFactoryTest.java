@@ -3,6 +3,7 @@ package net.kinguin.leadership.consul;
 import com.ecwid.consul.v1.Response;
 import com.ecwid.consul.v1.kv.KeyValueConsulClient;
 import com.ecwid.consul.v1.session.SessionConsulClient;
+import net.kinguin.leadership.consul.election.Gambler;
 import net.kinguin.leadership.consul.factory.SimpleClusterFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -31,8 +33,14 @@ public class SimpleClusterFactoryTest {
 
     @Test
     public void should_return_passive_gambler() throws Exception {
-        clusterFactory.mode(SimpleClusterFactory.MODE_SINGLE)
+        Gambler gambler = clusterFactory.mode(SimpleClusterFactory.MODE_SINGLE)
             .build();
+
+        assertTrue(gambler.asObservable()
+            .map(String::valueOf)
+            .toBlocking()
+            .single()
+            .equals(Gambler.ELECTED_FIRST_TIME));
     }
 
     @Test
@@ -47,7 +55,8 @@ public class SimpleClusterFactoryTest {
 
         // when
         Observable activeGambler = clusterFactory.mode(SimpleClusterFactory.MODE_MULTI)
-            .build();
+            .build()
+                .asObservable();
 
         // then
         activeGambler.subscribe(subscriber);
