@@ -10,6 +10,7 @@ public class SimpleFactoryExample {
             .mode(SimpleClusterFactory.MODE_MULTI)
             .debug(true)
             .build()
+            .asObservable()
             .subscribe(n -> System.out.println(n));
     }
 }

@@ -19,7 +19,8 @@ dependencies {
 
 ## Example of plain Java usage
 
-Use ```SimpleClusterFactory``` to ```build()``` Your "gambler" and subscribe to events like he will be common ```Observable```.
+Use ```SimpleClusterFactory``` to ```build()``` Your ```Gambler``` instance. 
+Every ```Gambler``` implementation provides ```asObservable()``` which facilitate access to events by subscribers.
 This code will create ```ActiveGambler``` which require Consul to be available on localhost:8500.
 
 ```java
@@ -27,16 +28,15 @@ This code will create ```ActiveGambler``` which require Consul to be available o
         .mode(SimpleClusterFactory.MODE_MULTI)
         .debug(true)
         .build()
+        .asObservable()
         .subscribe(n -> System.out.println(n));
 ```
-
-Above code will create Consul session with TTL = 15 seconds and recreate it every 7 seconds. `MultiNode` class will try to attach leader to current node (every 5 econds).
 
 ## Spring example
 
 ```java
-@Configuration
 @Profile("multiinstance")
+@Configuration
 @ConditionalOnConsulEnabled
 @EnableConfigurationProperties(value = {ClusterProperties.class, ConsulProperties.class})
 public class MultiInstance {
@@ -52,27 +52,17 @@ public class MultiInstance {
     }
 
     @Bean
-    public Session session(SessionConsulClient sessionConsulClient) {
-        return new Session(clusterProperties.getLeader().getSessionTtl(), sessionConsulClient);
-    }
-
-    @Bean
     public KeyValueConsulClient keyValueConsulClient() {
         return new KeyValueConsulClient(consulProperties.getHost(), consulProperties.getPort());
     }
 
     @Bean
-    public Cluster cluster(
-        Session session,
-        KeyValueConsulClient keyValueConsulClient
-    ) {
-        return new Cluster(session, clusterProperties.getLeader(), keyValueConsulClient);
-    }
-
-    @Bean
     @Primary
-    public ClusterMode multiinstance(Cluster cluster) {
-        return new MultiMode(cluster, clusterProperties.getLeader().getLeadershipAttemptsInterval());
+    public Gambler multiinstance(SessionConsulClient sessionConsulClient, KeyValueConsulClient keyValueConsulClient) {
+        return new SimpleClusterFactory(sessionConsulClient, keyValueConsulClient)
+            .mode(SimpleClusterFactory.MODE_MULTI)
+            .configure(clusterProperties.getLeader())
+            .build();
     }
 }
 ```

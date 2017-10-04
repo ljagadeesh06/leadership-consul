@@ -4,6 +4,7 @@ import com.ecwid.consul.v1.kv.KeyValueConsulClient;
 import com.ecwid.consul.v1.session.SessionConsulClient;
 import net.kinguin.leadership.consul.config.ClusterConfiguration;
 import net.kinguin.leadership.consul.election.ActiveGambler;
+import net.kinguin.leadership.consul.election.Gambler;
 import net.kinguin.leadership.consul.election.PassiveGambler;
 import net.kinguin.leadership.consul.operation.CreateSession;
 import net.kinguin.leadership.consul.operation.UpkeepSession;
@@ -58,10 +59,10 @@ public class SimpleClusterFactory extends AbstractClusterFactory {
         return this;
     }
 
-    public Observable build() {
+    public Gambler build() {
         verbose(String.format("%s mode active", mode));
         if (MODE_SINGLE == mode) {
-            return new PassiveGambler().asObservable();
+            return new PassiveGambler();
         }
 
         if (null == config) {
@@ -92,7 +93,7 @@ public class SimpleClusterFactory extends AbstractClusterFactory {
 
         verbose(String.format("Vote frequency setup on %s seconds frequency ", config.getElection().getFrequency()));
 
-        return gambler.asObservable();
+        return gambler;
     }
 
     private String createAndGetSessionId() {
