@@ -2,6 +2,8 @@
 
 ## Installation
 
+Look into [releases section](https://github.com/kinguinltdhk/leadership-consul/releases) and pick version.
+
 Put into Your ```gradle.build```
 
 ```groovy
@@ -12,16 +14,24 @@ repositories {
 
 dependencies {
     // ...
-    compile "com.github.kinguinltdhk:leadership-consul:0.0.4"
+    compile "com.github.kinguinltdhk:leadership-consul:0.1.1"
 }
-
 ```
 
 ## Example of plain Java usage
 
 Use ```SimpleClusterFactory``` to ```build()``` Your ```Gambler``` instance. 
 Every ```Gambler``` implementation provides ```asObservable()``` which facilitate access to events by subscribers.
-This code will create ```ActiveGambler``` which require Consul to be available on localhost:8500.
+This code will create ```ActiveGambler``` and subscribe to it with simple console output printer and print ```Gambler``` events. 
+
+You should see in the output:
+```
+elected // after 5 sconds
+elected.first // after 5 sconds
+elected // every 10 seconds
+```
+
+**Notice:** Execution of this code require Consul to be available on localhost:8500.
 
 ```java
     new SimpleClusterFactory()
