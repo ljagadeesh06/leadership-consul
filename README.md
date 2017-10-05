@@ -34,12 +34,12 @@ elected // every 10 seconds
 **Notice:** Execution of this code require Consul to be available on localhost:8500.
 
 ```java
-    new SimpleClusterFactory()
-        .mode(SimpleClusterFactory.MODE_MULTI)
-        .debug(true)
-        .build()
-        .asObservable()
-        .subscribe(n -> System.out.println(n));
+new SimpleClusterFactory()
+    .mode(SimpleClusterFactory.MODE_MULTI)
+    .debug(true)
+    .build()
+    .asObservable()
+    .subscribe(n -> System.out.println(n));
 ```
 
 ## Spring example
