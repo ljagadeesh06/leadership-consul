@@ -8,6 +8,8 @@ import net.kinguin.leadership.consul.config.ClusterConfiguration;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
+import java.io.IOException;
+
 public class ActiveGambler implements Runnable, Gambler {
     private KeyValueClient consulKVClient;
     private String sessionId;
@@ -15,6 +17,8 @@ public class ActiveGambler implements Runnable, Gambler {
     private boolean gotLeadership = false;
     private boolean wasLeader = false;
     private PublishSubject<Object> publisher = PublishSubject.create();
+    private String key;
+    private ObjectMapper mapper = new ObjectMapper();
 
     public ActiveGambler(
         KeyValueClient consulKVClient,
@@ -24,6 +28,8 @@ public class ActiveGambler implements Runnable, Gambler {
         this.consulKVClient = consulKVClient;
         this.sessionId = sessionId;
         this.clusterConfiguration = clusterConfiguration;
+        key = String.format(clusterConfiguration.getElection().getEnvelopeTemplate(),
+            clusterConfiguration.getServiceName());
     }
 
     @Override
@@ -31,15 +37,26 @@ public class ActiveGambler implements Runnable, Gambler {
         try {
             gotLeadership = vote();
         } catch (JsonProcessingException e) {
-            publisher.onError(e);
             gotLeadership = false;
+            publish(e);
             return;
         }
 
-        publisher.onNext(new java.lang.String(Gambler.ELECTED));
+        if (false == gotLeadership) {
+            publish(Gambler.NOT_ELECTED);
+
+            if (true == wasLeader) {
+                publish(Gambler.RELEGATION);
+                wasLeader = false;
+            }
+
+            return;
+        }
+
+        publish(Gambler.ELECTED);
 
         if (false == wasLeader) {
-            publisher.onNext(new java.lang.String(Gambler.ELECTED_FIRST_TIME));
+            publish(Gambler.ELECTED_FIRST_TIME);
             wasLeader = true;
         }
     }
@@ -53,9 +70,6 @@ public class ActiveGambler implements Runnable, Gambler {
     }
 
     private boolean vote() throws JsonProcessingException {
-        final java.lang.String key =
-            java.lang.String.format(clusterConfiguration.getElection().getEnvelopeTemplate(), clusterConfiguration.getServiceName());
-
         PutParams params = new PutParams();
         params.setAcquireSession(sessionId);
 
@@ -63,12 +77,43 @@ public class ActiveGambler implements Runnable, Gambler {
             .getValue();
     }
 
-    private java.lang.String createVoteEnvelope() throws JsonProcessingException {
+    private String createVoteEnvelope() throws JsonProcessingException {
         Vote vote = new Vote();
         vote.sessionId = sessionId;
         vote.serviceName = clusterConfiguration.getServiceName();
         vote.serviceId = clusterConfiguration.getServiceId();
 
         return new ObjectMapper().writeValueAsString(vote);
+    }
+
+    private Vote leaderLookup() throws IOException {
+        String response = consulKVClient.getKVValue(key)
+            .getValue()
+            .getDecodedValue();
+
+        return mapper.readValue(response, Vote.class);
+    }
+
+    private void publish(String status) {
+        Info info = new Info();
+        info.status = status;
+
+        try {
+            info.vote = leaderLookup();
+        } catch (IOException e) {}
+
+        publisher.onNext(info);
+    }
+
+    private void publish(Exception e) {
+        Info info = new Info();
+        info.status = Gambler.ERROR;
+        info.error = e.getMessage();
+
+        try {
+            info.vote = leaderLookup();
+        } catch (IOException ioe) {}
+
+        publisher.onNext(info);
     }
 }

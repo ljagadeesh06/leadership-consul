@@ -3,8 +3,11 @@ package net.kinguin.leadership.consul.election;
 import rx.Observable;
 
 public interface Gambler {
-    static final String ELECTED_FIRST_TIME = "elected.first";
-    static final String ELECTED = "elected";
+    String ELECTED_FIRST_TIME = "elected.first";
+    String ELECTED = "elected";
+    String RELEGATION = "relegation";
+    String NOT_ELECTED = "notelected";
+    String ERROR = "error";
 
     boolean isLeader();
     Observable<Object> asObservable();
