@@ -1,10 +1,9 @@
-package net.kinguin.leadership.consul;
+package net.kinguin.leadership.consul.factory;
 
 import com.ecwid.consul.v1.Response;
 import com.ecwid.consul.v1.kv.KeyValueConsulClient;
 import com.ecwid.consul.v1.session.SessionConsulClient;
 import net.kinguin.leadership.consul.election.Gambler;
-import net.kinguin.leadership.consul.factory.SimpleClusterFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -56,7 +55,7 @@ public class SimpleClusterFactoryTest {
         // when
         Observable activeGambler = clusterFactory.mode(SimpleClusterFactory.MODE_MULTI)
             .build()
-                .asObservable();
+            .asObservable();
 
         // then
         activeGambler.subscribe(subscriber);

@@ -11,6 +11,6 @@ public class SimpleFactoryExample {
             .debug(true)
             .build()
             .asObservable()
-            .subscribe(n -> System.out.println(n));
+            .subscribe(i -> System.out.println(i));
     }
 }

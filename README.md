@@ -14,7 +14,7 @@ repositories {
 
 dependencies {
     // ...
-    compile "com.github.kinguinltdhk:leadership-consul:0.1.1"
+    compile "com.github.kinguinltdhk:leadership-consul:0.2.0"
 }
 ```
 

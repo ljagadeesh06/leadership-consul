@@ -8,7 +8,6 @@ import net.kinguin.leadership.consul.election.Gambler;
 import net.kinguin.leadership.consul.election.PassiveGambler;
 import net.kinguin.leadership.consul.operation.CreateSession;
 import net.kinguin.leadership.consul.operation.UpkeepSession;
-import rx.Observable;
 
 import java.util.concurrent.*;
 import java.util.logging.Logger;
@@ -72,7 +71,7 @@ public class SimpleClusterFactory extends AbstractClusterFactory {
 
         if (null == sessionConsulClient) {
             verbose(String.format("SessionConsulClient not specified - default used host %s and port %s", config.getConsul().getHost(), config.getConsul().getPort()));
-            sessionConsulClient = new SessionConsulClient();
+            sessionConsulClient = new SessionConsulClient(config.getConsul().getHost(), config.getConsul().getPort());
         }
 
         String sessionId = createAndGetSessionId();

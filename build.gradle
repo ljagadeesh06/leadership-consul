@@ -8,6 +8,9 @@ targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://dl.bintray.com/palantir/releases'
+    }
 }
 
 dependencies {
@@ -19,6 +22,7 @@ dependencies {
     testCompile "junit:junit:4.12"
     testCompile "org.mockito:mockito-core:2.10.0"
     testCompile "org.mockito:mockito-inline:2.9.0"
+    testCompile "com.palantir.docker.compose:docker-compose-rule-junit4:0.32.1"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -35,6 +39,19 @@ artifacts {
     archives sourcesJar
     archives javadocJar
 }
+
+test {
+    useJUnit {
+        excludeCategories 'net.kinguin.leadership.consul.IntegrationTest'
+    }
+}
+
+task integrationTest(type: Test) {
+    useJUnit {
+        includeCategories 'net.kinguin.leadership.consul.IntegrationTest'
+    }
+}
+
 
 // To specify a license in the pom:
 install {
