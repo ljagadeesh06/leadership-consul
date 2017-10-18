@@ -3,6 +3,7 @@ package net.kinguin.leadership.consul.election;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class PassiveGamblerTest {
@@ -15,11 +16,12 @@ public class PassiveGamblerTest {
 
     @Test
     public void should_emit_first_time_leader_elected_event() throws Exception {
-        assertTrue(passiveGambler.asObservable()
-            .map(String::valueOf)
+        passiveGambler.asObservable()
             .toBlocking()
-            .single()
-            .equals(Gambler.ELECTED_FIRST_TIME));
+            .subscribe(i -> {
+                Info n = (Info) i;
+                assertEquals(Gambler.ELECTED_FIRST_TIME, ((Info) i).status);
+            });
     }
 
     @Test

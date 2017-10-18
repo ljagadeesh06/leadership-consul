@@ -10,6 +10,9 @@ public class PassiveGambler implements Gambler {
 
     @Override
     public Observable<Object> asObservable() {
-        return Observable.just(Gambler.ELECTED_FIRST_TIME);
+        Info info = new Info();
+        info.status = Gambler.ELECTED_FIRST_TIME;
+
+        return Observable.just(info);
     }
 }
