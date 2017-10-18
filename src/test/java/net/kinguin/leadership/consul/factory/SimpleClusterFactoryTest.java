@@ -4,6 +4,7 @@ import com.ecwid.consul.v1.Response;
 import com.ecwid.consul.v1.kv.KeyValueConsulClient;
 import com.ecwid.consul.v1.session.SessionConsulClient;
 import net.kinguin.leadership.consul.election.Gambler;
+import net.kinguin.leadership.consul.election.Info;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -11,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -35,11 +37,12 @@ public class SimpleClusterFactoryTest {
         Gambler gambler = clusterFactory.mode(SimpleClusterFactory.MODE_SINGLE)
             .build();
 
-        assertTrue(gambler.asObservable()
-            .map(String::valueOf)
+        gambler.asObservable()
             .toBlocking()
-            .single()
-            .equals(Gambler.ELECTED_FIRST_TIME));
+            .subscribe(i -> {
+                Info n = (Info) i;
+                assertEquals(Gambler.ELECTED_FIRST_TIME, ((Info) i).status);
+            });
     }
 
     @Test
